@@ -1,9 +1,22 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
+const http = require('http'); // Add http module
 const schedule = require('./schedule');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+// --- Health Check Server for Fly.io ---
+const port = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Bot is running!\n');
+});
+
+server.listen(port, () => {
+    console.log(`Health check server listening on port ${port}`);
+});
+// --------------------------------------
 
 // Helper to delay if needed, though we update once an hour so rate limits shouldn't be hit
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
